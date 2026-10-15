@@ -1,0 +1,6 @@
+{
+  "name": "AgriCycle AI",
+  "description": "Responsive agricultural waste management platform for monitoring, registering, and tracking crop residue batches in Jagtial, Telangana.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,397 @@
+import { WasteBatch, WasteType, ProcessingDestination, MoistureLevel } from '../types/batch';
+
+export const JAGTIAL_MANDALS = [
+  'Jagtial Rural',
+  'Jagtial Urban',
+  'Raikal',
+  'Dharmapuri',
+  'Korutla',
+  'Metpalli',
+  'Medipalli',
+  'Gollapalli',
+  'Pegadapalli',
+  'Kodimial',
+  'Sarangapur',
+  'Buggaram',
+  'Mallial',
+  'Beerpur',
+  'Velgatoor',
+  'Kathlapur',
+  'Ibrahimpatnam',
+] as const;
+
+export type JagtialMandal = typeof JAGTIAL_MANDALS[number];
+
+export const WASTE_TYPES: WasteType[] = [
+  'Paddy Straw',
+  'Cotton Stalks',
+  'Sugarcane Bagasse',
+  'Turmeric Foliage & Rhizomes',
+  'Maize Stover & Cobs',
+  'Chilli Stems & Residue',
+  'Mango Orchard Prunings',
+];
+
+export const PROCESSING_DESTINATIONS: ProcessingDestination[] = [
+  'Biomass Briquette / Pelleting',
+  'Bio-CNG / Biogas Plant',
+  'Vermicompost & Organic Fertilizer',
+  'Biochar Soil Amendment',
+  'Mushroom Cultivation Substrate',
+];
+
+export const MOISTURE_LEVELS: MoistureLevel[] = [
+  'Low (< 12%)',
+  'Moderate (12-20%)',
+  'High (> 20%)',
+];
+
+// Average residue value in Telangana rural bio-market (~₹1.80 to ₹3.50 / kg depending on residue)
+export const ESTIMATED_RATES_PER_KG: Record<WasteType, number> = {
+  'Paddy Straw': 2.1,
+  'Cotton Stalks': 2.5,
+  'Sugarcane Bagasse': 2.8,
+  'Turmeric Foliage & Rhizomes': 3.2,
+  'Maize Stover & Cobs': 2.2,
+  'Chilli Stems & Residue': 2.0,
+  'Mango Orchard Prunings': 2.6,
+};
+
+// CO2 equivalent avoided per kg of residue diverted from open field burning (~1.2 - 1.4 kg CO2e / kg)
+export const CO2_FACTOR = 1.25;
+
+export const INITIAL_DEMO_BATCHES: WasteBatch[] = [
+  {
+    id: 'AGC-JAG-2026-0101',
+    farmerName: 'Ramesh Reddy M.',
+    farmerPhone: '9848023412',
+    mandal: 'Kodimial',
+    village: 'Hasnabad',
+    wasteType: 'Paddy Straw',
+    quantityKg: 3200,
+    moistureLevel: 'Low (< 12%)',
+    intendedUse: 'Biomass Briquette / Pelleting',
+    collectionDate: '2026-10-14',
+    status: 'Awaiting collection',
+    notes: 'Stacked at field boundary near Hasnabad canal bridge. Baled and ready for tractor pickup.',
+    createdAt: '2026-10-14T08:30:00Z',
+    estimatedBiomassValueINR: Math.round(3200 * 2.1),
+    carbonOffsetKg: Math.round(3200 * 1.25),
+    statusHistory: [
+      {
+        status: 'Awaiting collection',
+        timestamp: '2026-10-14T10:00:00Z',
+        notes: 'Baled and stacked ready for tractor pickup',
+      },
+      {
+        status: 'Registered',
+        timestamp: '2026-10-14T08:30:00Z',
+        notes: 'Initial farmer registration logged',
+      },
+    ],
+  },
+  {
+    id: 'AGC-JAG-2026-0102',
+    farmerName: 'K. Lavanya',
+    farmerPhone: '9440187654',
+    mandal: 'Jagtial Rural',
+    village: 'Polasa',
+    wasteType: 'Turmeric Foliage & Rhizomes',
+    quantityKg: 1850,
+    moistureLevel: 'Moderate (12-20%)',
+    intendedUse: 'Vermicompost & Organic Fertilizer',
+    collectionDate: '2026-10-12',
+    status: 'Sent for inspection',
+    notes: 'Post-harvest turmeric leafy biomass from 3 acres. High organic nitrogen content.',
+    createdAt: '2026-10-12T10:15:00Z',
+    estimatedBiomassValueINR: Math.round(1850 * 3.2),
+    carbonOffsetKg: Math.round(1850 * 1.25),
+    latestAssessment: {
+      id: 'ASM-2026-000102',
+      batchId: 'AGC-JAG-2026-0102',
+      batchWasteType: 'Turmeric Foliage & Rhizomes',
+      batchFarmerName: 'K. Lavanya',
+      batchMandal: 'Jagtial Rural',
+      quantityKg: 1850,
+      assessedAt: '2026-10-12T11:00:00Z',
+      status: 'Requires inspection',
+      observedFactors: {
+        contamination: 'Visible mold / fungal decay',
+        hasMoldReported: true,
+        storageCondition: 'Covered shed / raised pallet',
+        odourProfile: 'Musty / damp decay',
+        visualNotes: 'Localized surface mildew colonies detected on inner bundled leaves.',
+      },
+      triggeredRules: [
+        'Rule 2 (Priority 2): Mold or fungal growth reported -> Requires inspection',
+      ],
+      reason: 'Mold or fungal growth is reported on the agricultural residue.',
+      explanation:
+        'Excess moisture and mold indicate biological degradation of lignocellulosic fibers. Moldy biomass creates spore dust hazards for workers and causes premature rotting, but may still be utilized in specialized thermophilic compost windrows if moisture is controlled.',
+      recommendedNextStep:
+        'Recommend keeping the batch segregated and arranging an appropriate inspection.',
+      isDemoScreening: true,
+    },
+    statusHistory: [
+      {
+        status: 'Sent for inspection',
+        timestamp: '2026-10-12T11:30:00Z',
+        notes: 'Mildew detected during screening; dispatched aggregator for moisture audit',
+      },
+      {
+        status: 'Awaiting assessment',
+        timestamp: '2026-10-12T10:30:00Z',
+        notes: 'Scheduled for initial quality check',
+      },
+      {
+        status: 'Registered',
+        timestamp: '2026-10-12T10:15:00Z',
+        notes: 'Logged into Jagtial Rural database',
+      },
+    ],
+  },
+  {
+    id: 'AGC-JAG-2026-0103',
+    farmerName: 'B. Padma Rao',
+    farmerPhone: '9989054321',
+    mandal: 'Raikal',
+    village: 'Ithikyal',
+    wasteType: 'Cotton Stalks',
+    quantityKg: 4500,
+    moistureLevel: 'Low (< 12%)',
+    intendedUse: 'Biochar Soil Amendment',
+    collectionDate: '2026-10-10',
+    status: 'Closed',
+    notes: 'Pulverized dry cotton stalks processed through low-oxygen pyrolyzer into agricultural biochar.',
+    createdAt: '2026-10-10T09:00:00Z',
+    estimatedBiomassValueINR: Math.round(4500 * 2.5),
+    carbonOffsetKg: Math.round(4500 * 1.25),
+    latestAssessment: {
+      id: 'ASM-2026-000103',
+      batchId: 'AGC-JAG-2026-0103',
+      batchWasteType: 'Cotton Stalks',
+      batchFarmerName: 'B. Padma Rao',
+      batchMandal: 'Raikal',
+      quantityKg: 4500,
+      assessedAt: '2026-10-10T09:30:00Z',
+      status: 'Potentially suitable for further processing',
+      observedFactors: {
+        contamination: 'None observed (clean residue)',
+        storageCondition: 'Covered shed / raised pallet',
+        odourProfile: 'Fresh natural plant aroma',
+        visualNotes: 'Dry, crisp cotton woody stalks, zero stones or plastic drip fragments.',
+      },
+      triggeredRules: [
+        'Rule 5 (Priority 5): Default clean baseline -> Potentially suitable for further processing',
+      ],
+      reason: 'No pesticide/chemical contamination, mold growth, synthetic waste, or unknown factors reported. Baseline physical screening criteria satisfied.',
+      explanation:
+        'Residue parameters for this Cotton Stalks batch meet standard physical acceptance criteria for Biochar Soil Amendment. Free from detectable chemical smells, synthetic debris, or excessive moisture degradation.',
+      recommendedNextStep:
+        'Recommend preliminary feedstock review and appropriate verification before reuse.',
+      isDemoScreening: true,
+    },
+    statusHistory: [
+      {
+        status: 'Closed',
+        timestamp: '2026-10-11T16:00:00Z',
+        notes: 'Pyrolysis complete; biochar soil amendment bagged and certified',
+      },
+      {
+        status: 'Sent for processing',
+        timestamp: '2026-10-10T14:00:00Z',
+        notes: 'Delivered to Raikal biochar facility',
+      },
+      {
+        status: 'Collected',
+        timestamp: '2026-10-10T11:00:00Z',
+        notes: 'Tractor transport from Ithikyal farm gate',
+      },
+      {
+        status: 'Registered',
+        timestamp: '2026-10-10T09:00:00Z',
+        notes: 'Logged entry',
+      },
+    ],
+  },
+  {
+    id: 'AGC-JAG-2026-0104',
+    farmerName: 'S. Tirupathi',
+    farmerPhone: '9701238901',
+    mandal: 'Dharmapuri',
+    village: 'Thimmapur',
+    wasteType: 'Sugarcane Bagasse',
+    quantityKg: 6200,
+    moistureLevel: 'Moderate (12-20%)',
+    intendedUse: 'Bio-CNG / Biogas Plant',
+    collectionDate: '2026-10-13',
+    status: 'Collected',
+    notes: 'Transit dispatch via lorry AP36Y-4412 to regional Muthyampet biomethanation plant.',
+    createdAt: '2026-10-13T14:20:00Z',
+    estimatedBiomassValueINR: Math.round(6200 * 2.8),
+    carbonOffsetKg: Math.round(6200 * 1.25),
+    statusHistory: [
+      {
+        status: 'Collected',
+        timestamp: '2026-10-13T16:45:00Z',
+        notes: 'Loaded on lorry AP36Y-4412 for Muthyampet bio-CNG plant',
+      },
+      {
+        status: 'Awaiting collection',
+        timestamp: '2026-10-13T14:20:00Z',
+        notes: 'Residue lot stacked near mill weighbridge',
+      },
+    ],
+  },
+  {
+    id: 'AGC-JAG-2026-0105',
+    farmerName: 'G. Anjaiah',
+    farmerPhone: '9490312567',
+    mandal: 'Korutla',
+    village: 'Venkatraopet',
+    wasteType: 'Maize Stover & Cobs',
+    quantityKg: 2400,
+    moistureLevel: 'Low (< 12%)',
+    intendedUse: 'Mushroom Cultivation Substrate',
+    collectionDate: '2026-10-08',
+    status: 'Closed',
+    notes: 'Shredded maize residue delivered to local oyster mushroom grower cooperative.',
+    createdAt: '2026-10-08T11:45:00Z',
+    estimatedBiomassValueINR: Math.round(2400 * 2.2),
+    carbonOffsetKg: Math.round(2400 * 1.25),
+    statusHistory: [
+      {
+        status: 'Closed',
+        timestamp: '2026-10-09T18:00:00Z',
+        notes: 'Sterilization and inoculation complete at Korutla mushroom spawn center',
+      },
+      {
+        status: 'Sent for processing',
+        timestamp: '2026-10-08T15:00:00Z',
+      },
+      {
+        status: 'Registered',
+        timestamp: '2026-10-08T11:45:00Z',
+      },
+    ],
+  },
+  {
+    id: 'AGC-JAG-2026-0106',
+    farmerName: 'Ch. Srinivas',
+    farmerPhone: '9866412890',
+    mandal: 'Metpalli',
+    village: 'Vellulla',
+    wasteType: 'Mango Orchard Prunings',
+    quantityKg: 5100,
+    moistureLevel: 'Low (< 12%)',
+    intendedUse: 'Biomass Briquette / Pelleting',
+    collectionDate: '2026-10-11',
+    status: 'Sent for processing',
+    notes: 'Post-pruning branches from 15-year old Banganapalle mango orchard, chipped for industrial boiler briquettes.',
+    createdAt: '2026-10-11T16:00:00Z',
+    estimatedBiomassValueINR: Math.round(5100 * 2.6),
+    carbonOffsetKg: Math.round(5100 * 1.25),
+    latestAssessment: {
+      id: 'ASM-2026-000106',
+      batchId: 'AGC-JAG-2026-0106',
+      batchWasteType: 'Mango Orchard Prunings',
+      batchFarmerName: 'Ch. Srinivas',
+      batchMandal: 'Metpalli',
+      quantityKg: 5100,
+      assessedAt: '2026-10-11T16:30:00Z',
+      status: 'Potentially suitable for further processing',
+      observedFactors: {
+        contamination: 'None observed (clean residue)',
+        storageCondition: 'Covered shed / raised pallet',
+        odourProfile: 'Fresh natural plant aroma',
+      },
+      triggeredRules: [
+        'Rule 5 (Priority 5): Default clean baseline -> Potentially suitable for further processing',
+      ],
+      reason: 'No contaminants observed in woody prunings.',
+      explanation: 'Hardwood clippings meet pelleting requirements.',
+      recommendedNextStep:
+        'Recommend preliminary feedstock review and appropriate verification before reuse.',
+      isDemoScreening: true,
+    },
+    statusHistory: [
+      {
+        status: 'Sent for processing',
+        timestamp: '2026-10-12T09:00:00Z',
+        notes: 'Chipping line operational at Metpalli briquette unit',
+      },
+      {
+        status: 'Collected',
+        timestamp: '2026-10-11T18:00:00Z',
+      },
+      {
+        status: 'Assessment completed',
+        timestamp: '2026-10-11T16:30:00Z',
+      },
+      {
+        status: 'Registered',
+        timestamp: '2026-10-11T16:00:00Z',
+      },
+    ],
+  },
+  {
+    id: 'AGC-JAG-2026-0107',
+    farmerName: 'D. Rajitha',
+    farmerPhone: '9177890432',
+    mandal: 'Gollapalli',
+    village: 'Chilvakodur',
+    wasteType: 'Paddy Straw',
+    quantityKg: 2800,
+    moistureLevel: 'High (> 20%)',
+    intendedUse: 'Vermicompost & Organic Fertilizer',
+    collectionDate: '2026-10-15',
+    status: 'Awaiting collection',
+    notes: 'Freshly harvested Tel-Sona paddy straw; scheduled for immediate aeration and compost pits.',
+    createdAt: '2026-10-15T07:10:00Z',
+    estimatedBiomassValueINR: Math.round(2800 * 2.1),
+    carbonOffsetKg: Math.round(2800 * 1.25),
+    statusHistory: [
+      {
+        status: 'Awaiting collection',
+        timestamp: '2026-10-15T08:00:00Z',
+        notes: 'Pickup dispatched with tractor trailer',
+      },
+      {
+        status: 'Registered',
+        timestamp: '2026-10-15T07:10:00Z',
+      },
+    ],
+  },
+  {
+    id: 'AGC-JAG-2026-0108',
+    farmerName: 'Mohd. Khaleel',
+    farmerPhone: '9849921098',
+    mandal: 'Medipalli',
+    village: 'Mannegudem',
+    wasteType: 'Chilli Stems & Residue',
+    quantityKg: 1450,
+    moistureLevel: 'Moderate (12-20%)',
+    intendedUse: 'Biochar Soil Amendment',
+    collectionDate: '2026-10-06',
+    status: 'Closed',
+    notes: 'High potash dry chilli stem waste successfully carbonized for nutrient retention.',
+    createdAt: '2026-10-06T13:30:00Z',
+    estimatedBiomassValueINR: Math.round(1450 * 2.0),
+    carbonOffsetKg: Math.round(1450 * 1.25),
+    statusHistory: [
+      {
+        status: 'Closed',
+        timestamp: '2026-10-07T17:00:00Z',
+        notes: 'Carbonized and distributed to local organic farmers',
+      },
+      {
+        status: 'Sent for processing',
+        timestamp: '2026-10-06T16:00:00Z',
+      },
+      {
+        status: 'Registered',
+        timestamp: '2026-10-06T13:30:00Z',
+      },
+    ],
+  },
+];
